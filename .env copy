@@ -1,0 +1,5 @@
+DB_HOST="localhost"
+DB_NAME="api_db"
+DB_USER="api_db_user"
+DB_PASS=""
+DB_PORT=3307
