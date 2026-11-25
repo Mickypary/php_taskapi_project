@@ -7,6 +7,7 @@ declare(strict_types=1);
 use App\Controllers\{Auth, Database, TaskController};
 use App\Gateways\TaskGateway;
 use App\Gateways\UserGateway;
+use App\JWTCodec;
 use Dotenv\Dotenv;
 
 require __DIR__ . '/bootstrap.php';
@@ -37,12 +38,26 @@ $database = new Database($_ENV['DB_HOST'], $_ENV['DB_NAME'], $_ENV['DB_USER'], $
 
 $user_gateway = new UserGateway($database);
 
-$auth = new Auth($user_gateway);
+$codec = new JWTCodec($_ENV['SECRET_KEY']);
 
-if (!$auth->authenticateAccessToken()) {
+$auth = new Auth($user_gateway, $codec);
+
+// Using API KEY
+// if (!$auth->authenticateAPIKey()) {
+//     exit;
+// }
+
+// Using Access Token
+// if (!$auth->authenticateAccessToken()) {
+//     exit;
+// }
+
+// Using JWT
+if (!$auth->authenticateJWT()) {
     exit;
 }
 
+// $user_id = $auth->getUserID();
 $user_id = $auth->getUserID();
 
 $task_gateway = new TaskGateway($database);

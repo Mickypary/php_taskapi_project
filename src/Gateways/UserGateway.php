@@ -13,6 +13,7 @@ class UserGateway
         $this->conn = $database->getConnection();
     }
 
+    // Called in index.php
     public function getByAPIKey(string $key): array|false
     {
         $sql = 'SELECT * FROM user WHERE api_key = :api_key';
@@ -22,6 +23,7 @@ class UserGateway
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    // Called in login.php
     public function getByUsername(string $username): array | false
     {
         $sql = 'SELECT * FROM user WHERE username = :username';
