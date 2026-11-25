@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Controllers\Database;
 use App\Gateways\UserGateway;
 use App\JWTCodec;
+use App\RefreshTokenGateway;
 
 require __DIR__ . '/bootstrap.php';
 
@@ -39,23 +40,14 @@ if (!password_verify($data['password'], $user['password_hash'])) {
     exit;
 }
 
-$payload = [
-    'sub' => $user['id'],
-    'name' => $user['name'],
-    'exp' => time() + 20,
-];
+// Using JWT
+$codec = new JWTCodec($_ENV['SECRET_KEY']);
 
 // using base64_encode
 // $access_token = base64_encode(json_encode($payload));
 
-// using JWT
-$codec = new JWTCodec($_ENV['SECRET_KEY']);
-$access_token = $codec->encode($payload);
+require __DIR__ . '/tokens.php';
 
-//refresh token
-$refresh_token = $codec->encode([
-    'sub' => $user['id'],
-    'exp' => time() + 432000, // 5 days
-]);
+$refresh_token_gateway = new RefreshTokenGateway($database, $_ENV['SECRET_KEY']);
 
-echo json_encode(['access_token' => $access_token, 'refresh_token' => $refresh_token]);
+$refresh_token_gateway->create($refresh_token, $refresh_token_expiry);
