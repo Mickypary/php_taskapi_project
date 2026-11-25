@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Gateways\UserGateway;
 use App\InvalidSignatureException;
 use App\JWTCodec;
+use App\TokenExpiredException;
 
 class Auth
 {
@@ -87,6 +88,10 @@ class Auth
         } catch (InvalidSignatureException) {
             http_response_code(401);
             echo json_encode(['message' => 'invalid signature']);
+            return false;
+        } catch (TokenExpiredException) {
+            http_response_code(401);
+            echo json_encode(['message' => 'token has expired']);
             return false;
         } catch (\Exception $e) {
             http_response_code(400);
